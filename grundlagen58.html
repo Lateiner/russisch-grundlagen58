@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Russisch-Lernportal: Genitiv der Adjektive</title>
+    <!-- Polyfill für Drag and Drop auf Touch-Geräten -->
+    <script src="https://cdn.jsdelivr.net/npm/drag-drop-touch@1.3.1/DragDropTouch.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --success-bg: #d4edda;
+            --error-color: #e74c3c;
+            --error-bg: #f8d7da;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--primary-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        h1, h2, h3 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 10px;
+        }
+
+        .intro-box {
+            background: #eef2f7;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 5px solid var(--secondary-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .exercise-container {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            background: #fafafa;
+            transition: all 0.3s ease;
+        }
+
+        .controls {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: opacity 0.2s;
+        }
+
+        .btn-reset { background-color: #95a5a6; color: white; }
+        .btn-solution { background-color: var(--secondary-color); color: white; }
+        button:hover { opacity: 0.8; }
+
+        select, .drop-zone {
+            padding: 5px;
+            border-radius: 4px;
+            border: 2px solid #ccc;
+            font-size: 1rem;
+            background: white;
+            transition: all 0.3s;
+        }
+
+        .drop-zone {
+            display: inline-block;
+            min-width: 80px;
+            min-height: 30px;
+            border: 2px dashed #bbb;
+            vertical-align: middle;
+            text-align: center;
+            line-height: 30px;
+        }
+
+        /* Feedback-Klassen */
+        .correct { 
+            border-color: var(--success-color) !important; 
+            background-color: var(--success-bg) !important; 
+        }
+        .incorrect { 
+            border-color: var(--error-color) !important; 
+            background-color: var(--error-bg) !important; 
+        }
+
+        .radio-option {
+            display: block;
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border: 1px solid transparent;
+        }
+
+        .drag-item {
+            padding: 5px 12px;
+            background: var(--secondary-color);
+            color: white;
+            border-radius: 4px;
+            cursor: grab;
+            display: inline-block;
+            margin-right: 5px;
+            user-select: none;
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Russische Grammatik</h1>
+    <h2>Grundlagen: Deklination russischer Adjektive im Genitiv (Singular)</h2>
+
+    <div class="intro-box">
+        <p>Der Genitiv wird nach Ausdrücken wie „У меня нет...“ (Ich habe kein...) verwendet. Die Endungen richten sich nach der Adjektivgruppe und dem Geschlecht.</p>
+        
+        <table>
+            <tr>
+                <th>Geschlecht</th>
+                <th>Gruppe</th>
+                <th>Genitiv-Endung</th>
+                <th>Beispiel</th>
+            </tr>
+            <tr>
+                <td>Maskulin / Neutrum</td>
+                <td>Hart</td>
+                <td><strong>-ого</strong></td>
+                <td>нового словаря / здания</td>
+            </tr>
+            <tr>
+                <td>Maskulin / Neutrum</td>
+                <td>Weich / Zischlaut</td>
+                <td><strong>-его</strong></td>
+                <td>синего моря / хорошего друга</td>
+            </tr>
+            <tr>
+                <td>Feminin</td>
+                <td>Hart</td>
+                <td><strong>-ой</strong></td>
+                <td>новой книги</td>
+            </tr>
+            <tr>
+                <td>Feminin</td>
+                <td>Weich / Zischlaut</td>
+                <td><strong>-ей</strong></td>
+                <td>синей сумки / хорошей подруги</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Aufgaben -->
+
+    <div class="exercise-container" id="ex1">
+        <h3>Aufgabe 1: Maskulinum Hart</h3>
+        <p>У меня нет нов<select onchange="validateInput(this)" data-answer="ого">
+            <option value="">--</option>
+            <option value="ого">ого</option>
+            <option value="его">его</option>
+        </select> телефона.</p>
+        <div class="controls">
+            <button class="btn-reset" onclick="resetExercise('ex1')">Zurücksetzen</button>
+            <button class="btn-solution" onclick="showSolution('ex1')">Lösung anzeigen</button>
+        </div>
+    </div>
+
+    <div class="exercise-container" id="ex2">
+        <h3>Aufgabe 2: Femininum Hart</h3>
+        <p>У меня нет нов<select onchange="validateInput(this)" data-answer="ой">
+            <option value="">--</option>
+            <option value="ой">ой</option>
+            <option value="ей">ей</option>
+        </select> машины.</p>
+        <div class="controls">
+            <button class="btn-reset" onclick="resetExercise('ex2')">Zurücksetzen</button>
+            <button class="btn-solution" onclick="showSolution('ex2')">Lösung anzeigen</button>
+        </div>
+    </div>
+
+    <div class="exercise-container" id="ex3">
+        <h3>Aufgabe 3: Maskulinum Weich</h3>
+        <p>Я не вижу син<select onchange="validateInput(this)" data-answer="его">
+            <option value="">--</option>
+            <option value="ого">ого</option>
+            <option value="его">его</option>
+        </select> карандаша.</p>
+        <div class="controls">
+            <button class="btn-reset" onclick="resetExercise('ex3')">Zurücksetzen</button>
+            <button class="btn-solution" onclick="showSolution('ex3')">Lösung anzeigen</button>
+        </div>
+    </div>
+
+    <div class="exercise-container" id="ex4">
+        <h3>Aufgabe 4: Femininum Weich</h3>
+        <p>Это цвет син<select onchange="validateInput(this)" data-answer="ей">
+            <option value="">--</option>
+            <option value="ой">ой</option>
+            <option value="ей">ей</option>
+        </select> ручки.</p>
+        <div class="controls">
+            <button class="btn-reset" onclick="resetExercise('ex4')">Zurücksetzen</button>
+            <button class="btn-solution" onclick="showSolution('ex4')">Lösung anzeigen</button>
+        </div>
+    </div>
+
+    <div class="exercise-container" id="ex5">
+        <h3>Aufgabe 5: Neutrum Hart</h3>
+        <p>У этого больш<select onchange="validateInput(this)" data-answer="ого">
+            <option value="">--</option>
+            <option value="ого">ого</option>
+            <option value="его">его</option>
+        </select> здания нет входа.</p>
+        <div class="controls">
+            <button class="btn-reset" onclick="resetExercise('ex5')">Zurücksetzen</button>
+            <button class="btn-solution" onclick="showSolution('ex5')">Lösung anzeigen</button>
+        </div>
+    </div>
+
+    <div class="exercise-container" id="ex6">
+        <h3>Aufgabe 6: Drag & Drop - Zischlaut</h3>
+        <div class="drag-item" draggable="true" ondragstart="drag(event)">ого</div>
+        <div class="drag-item" draggable="true" ondragstart="drag(event)">его</div>
+        <p style="margin-top:10px;">Для хорош<span class="drop-zone" ondrop="drop(event)" ondragover="allowDrop(event)" data-answer="его"></span> друга ничего nicht жалко.</p>
+        <div class="controls">
+            <button class="btn-reset" onclick="resetExercise('ex6')">Zurücksetzen</button>
+            <button class="btn-solution" onclick="showSolution('ex6')">Lösung anzeigen</button>
+        </div>
+    </div>
+
+    <div class="exercise-container" id="ex7">
+        <h3>Aufgabe 7: Auswahl - Adjektivgruppe</h3>
+        <p>Wähle die korrekte Form für „русский язык“ (Genitiv):</p>
+        <div class="radio-option"><input type="radio" name="q7" onchange="validateRadio(this)" data-answer="true"> русского языка</div>
+        <div class="radio-option"><input type="radio" name="q7" onchange="validateRadio(this)"> русское языка</div>
+        <div class="radio-option"><input type="radio" name="q7" onchange="validateRadio(this)"> русским языка</div>
+        <div class="controls">
+            <button class="btn-reset" onclick="resetExercise('ex7')">Zurücksetzen</button>
+            <button class="btn-solution" onclick="showSolution('ex7')">Lösung anzeigen</button>
+        </div>
+    </div>
+
+    <div class="exercise-container" id="ex8">
+        <h3>Aufgabe 8: Femininum Zischlaut</h3>
+        <p>У моей хорош<select onchange="validateInput(this)" data-answer="ей">
+            <option value="">--</option>
+            <option value="ой">ой</option>
+            <option value="ей">ей</option>
+        </select> подруги есть собака.</p>
+        <div class="controls">
+            <button class="btn-reset" onclick="resetExercise('ex8')">Zurücksetzen</button>
+            <button class="btn-solution" onclick="showSolution('ex8')">Lösung anzeigen</button>
+        </div>
+    </div>
+
+    <div class="exercise-container" id="ex9">
+        <h3>Aufgabe 9: Maskulinum nach Präposition</h3>
+        <p>До самог<select onchange="validateInput(this)" data-answer="ого">
+            <option value="">--</option>
+            <option value="ого">ого</option>
+            <option value="его">его</option>
+        </select> вечера мы гуляли.</p>
+        <div class="controls">
+            <button class="btn-reset" onclick="resetExercise('ex9')">Zurücksetzen</button>
+            <button class="btn-solution" onclick="showSolution('ex9')">Lösung anzeigen</button>
+        </div>
+    </div>
+
+    <div class="exercise-container" id="ex10">
+        <h3>Aufgabe 10: Drag & Drop - Neutrum</h3>
+        <div class="drag-item" draggable="true" ondragstart="drag(event)">ого</div>
+        <div class="drag-item" draggable="true" ondragstart="drag(event)">его</div>
+        <p style="margin-top:10px;">Около летн<span class="drop-zone" ondrop="drop(event)" ondragover="allowDrop(event)" data-answer="его"></span> кафе много людей.</p>
+        <div class="controls">
+            <button class="btn-reset" onclick="resetExercise('ex10')">Zurücksetzen</button>
+            <button class="btn-solution" onclick="showSolution('ex10')">Lösung anzeigen</button>
+        </div>
+    </div>
+
+    <div class="exercise-container" id="ex11">
+        <h3>Aufgabe 11: Auswahl - „Kalter Tee“</h3>
+        <p>Нет холодн... чая (Maskulin):</p>
+        <div class="radio-option"><input type="radio" name="q11" onchange="validateRadio(this)"> холодней</div>
+        <div class="radio-option"><input type="radio" name="q11" onchange="validateRadio(this)" data-answer="true"> холодного</div>
+        <div class="radio-option"><input type="radio" name="q11" onchange="validateRadio(this)"> холоднего</div>
+        <div class="controls">
+            <button class="btn-reset" onclick="resetExercise('ex11')">Zurücksetzen</button>
+            <button class="btn-solution" onclick="showSolution('ex11')">Lösung anzeigen</button>
+        </div>
+    </div>
+
+    <div class="exercise-container" id="ex12">
+        <h3>Aufgabe 12: Genitiv nach Verneinung</h3>
+        <p>В магазине нет дорог<select onchange="validateInput(this)" data-answer="ого">
+            <option value="">--</option>
+            <option value="ого">ого</option>
+            <option value="его">его</option>
+        </select> вина.</p>
+        <div class="controls">
+            <button class="btn-reset" onclick="resetExercise('ex12')">Zurücksetzen</button>
+            <button class="btn-solution" onclick="showSolution('ex12')">Lösung anzeigen</button>
+        </div>
+    </div>
+
+    <div class="exercise-container" id="ex13">
+        <h3>Aufgabe 13: Femininum - „Interessante Zeitung“</h3>
+        <p>Я не читал интересн<select onchange="validateInput(this)" data-answer="ой">
+            <option value="">--</option>
+            <option value="ой">ой</option>
+            <option value="ей">ей</option>
+        </select> газеты.</p>
+        <div class="controls">
+            <button class="btn-reset" onclick="resetExercise('ex13')">Zurücksetzen</button>
+            <button class="btn-solution" onclick="showSolution('ex13')">Lösung anzeigen</button>
+        </div>
+    </div>
+
+    <div class="exercise-container" id="ex14">
+        <h3>Aufgabe 14: Maskulinum - „Kleiner Junge“</h3>
+        <p>У маленьк<select onchange="validateInput(this)" data-answer="ого">
+            <option value="">--</option>
+            <option value="ого">ого</option>
+            <option value="его">его</option>
+        </select> мальчика нет игрушки.</p>
+        <div class="controls">
+            <button class="btn-reset" onclick="resetExercise('ex14')">Zurücksetzen</button>
+            <button class="btn-solution" onclick="showSolution('ex14')">Lösung anzeigen</button>
+        </div>
+    </div>
+
+    <div class="exercise-container" id="ex15">
+        <h3>Aufgabe 15: Drag & Drop - Weich</h3>
+        <div class="drag-item" draggable="true" ondragstart="drag(event)">ой</div>
+        <div class="drag-item" draggable="true" ondragstart="drag(event)">ей</div>
+        <p style="margin-top:10px;">После последн<span class="drop-zone" ondrop="drop(event)" ondragover="allowDrop(event)" data-answer="ей"></span> пары мы пошли домой.</p>
+        <div class="controls">
+            <button class="btn-reset" onclick="resetExercise('ex15')">Zurücksetzen</button>
+            <button class="btn-solution" onclick="showSolution('ex15')">Lösung anzeigen</button>
+        </div>
+    </div>
+
+    <div class="exercise-container" id="ex16">
+        <h3>Aufgabe 16: Auswahl - „Heißes Wasser“</h3>
+        <p>Я хочу стакан горяч... воды (Feminin):</p>
+        <div class="radio-option"><input type="radio" name="q16" onchange="validateRadio(this)"> горячой</div>
+        <div class="radio-option"><input type="radio" name="q16" onchange="validateRadio(this)" data-answer="true"> горячей</div>
+        <div class="radio-option"><input type="radio" name="q16" onchange="validateRadio(this)"> горячого</div>
+        <div class="controls">
+            <button class="btn-reset" onclick="resetExercise('ex16')">Zurücksetzen</button>
+            <button class="btn-solution" onclick="showSolution('ex16')">Lösung anzeigen</button>
+        </div>
+    </div>
+
+    <div class="exercise-container" id="ex17">
+        <h3>Aufgabe 17: Neutrum Hart</h3>
+        <p>У этого нов<select onchange="validateInput(this)" data-answer="ого">
+            <option value="">--</option>
+            <option value="ого">ого</option>
+            <option value="его">его</option>
+        </select> пальто нет пуговиц.</p>
+        <div class="controls">
+            <button class="btn-reset" onclick="resetExercise('ex17')">Zurücksetzen</button>
+            <button class="btn-solution" onclick="showSolution('ex17')">Lösung anzeigen</button>
+        </div>
+    </div>
+
+    <div class="exercise-container" id="ex18">
+        <h3>Aufgabe 18: Maskulinum - „Teurer Gast“</h3>
+        <p>Для дорог<select onchange="validateInput(this)" data-answer="ого">
+            <option value="">--</option>
+            <option value="ого">ого</option>
+            <option value="его">его</option>
+        </select> гостя приготовили обед.</p>
+        <div class="controls">
+            <button class="btn-reset" onclick="resetExercise('ex18')">Zurücksetzen</button>
+            <button class="btn-solution" onclick="showSolution('ex18')">Lösung anzeigen</button>
+        </div>
+    </div>
+
+    <div class="exercise-container" id="ex19">
+        <h3>Aufgabe 19: Femininum - „Hoher Berg“</h3>
+        <p>С высок<select onchange="validateInput(this)" data-answer="ой">
+            <option value="">--</option>
+            <option value="ой">ой</option>
+            <option value="ей">ей</option>
+        </select> горы видно всё.</p>
+        <div class="controls">
+            <button class="btn-reset" onclick="resetExercise('ex19')">Zurücksetzen</button>
+            <button class="btn-solution" onclick="showSolution('ex19')">Lösung anzeigen</button>
+        </div>
+    </div>
+
+    <div class="exercise-container" id="ex20">
+        <h3>Aufgabe 20: Zusammengesetztes Adjektiv</h3>
+        <p>Нет русско-английск<select onchange="validateInput(this)" data-answer="ого">
+            <option value="">--</option>
+            <option value="ого">ого</option>
+            <option value="его">его</option>
+        </select> словаря.</p>
+        <div class="controls">
+            <button class="btn-reset" onclick="resetExercise('ex20')">Zurücksetzen</button>
+            <button class="btn-solution" onclick="showSolution('ex20')">Lösung anzeigen</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // Validierung für Select-Felder
+    function validateInput(el) {
+        const answer = el.getAttribute('data-answer');
+        if (el.value === "") {
+            el.classList.remove('correct', 'incorrect');
+        } else if (el.value === answer) {
+            el.classList.add('correct');
+            el.classList.remove('incorrect');
+        } else {
+            el.classList.add('incorrect');
+            el.classList.remove('correct');
+        }
+    }
+
+    // Validierung für Radio-Buttons
+    function validateRadio(el) {
+        const parent = el.closest('.exercise-container');
+        const options = parent.querySelectorAll('.radio-option');
+        options.forEach(opt => {
+            const input = opt.querySelector('input');
+            opt.classList.remove('correct', 'incorrect');
+            if (input.checked) {
+                if (input.getAttribute('data-answer') === "true") {
+                    opt.classList.add('correct');
+                } else {
+                    opt.classList.add('incorrect');
+                }
+            }
+        });
+    }
+
+    // Drag and Drop Logik
+    function allowDrop(ev) {
+        ev.preventDefault();
+    }
+
+    function drag(ev) {
+        ev.dataTransfer.setData("text", ev.target.innerText);
+    }
+
+    function drop(ev) {
+        ev.preventDefault();
+        const data = ev.dataTransfer.getData("text");
+        ev.target.innerText = data;
+        
+        const answer = ev.target.getAttribute('data-answer');
+        if (data === answer) {
+            ev.target.classList.add('correct');
+            ev.target.classList.remove('incorrect');
+        } else {
+            ev.target.classList.add('incorrect');
+            ev.target.classList.remove('correct');
+        }
+    }
+
+    // Lösung im Feld anzeigen
+    function showSolution(id) {
+        const container = document.getElementById(id);
+        
+        // Selects
+        const select = container.querySelector('select');
+        if (select) {
+            select.value = select.getAttribute('data-answer');
+            validateInput(select);
+        }
+
+        // Drag Zones
+        const dropZone = container.querySelector('.drop-zone');
+        if (dropZone) {
+            dropZone.innerText = dropZone.getAttribute('data-answer');
+            dropZone.classList.add('correct');
+            dropZone.classList.remove('incorrect');
+        }
+
+        // Radios
+        const radios = container.querySelectorAll('input[type="radio"]');
+        radios.forEach(radio => {
+            if (radio.getAttribute('data-answer') === "true") {
+                radio.checked = true;
+                validateRadio(radio);
+            }
+        });
+    }
+
+    // Zurücksetzen
+    function resetExercise(id) {
+        const container = document.getElementById(id);
+        
+        const select = container.querySelector('select');
+        if (select) {
+            select.value = "";
+            select.classList.remove('correct', 'incorrect');
+        }
+
+        const dropZone = container.querySelector('.drop-zone');
+        if (dropZone) {
+            dropZone.innerText = "";
+            dropZone.classList.remove('correct', 'incorrect');
+        }
+
+        const radios = container.querySelectorAll('input[type="radio"]');
+        radios.forEach(radio => {
+            radio.checked = false;
+        });
+        const options = container.querySelectorAll('.radio-option');
+        options.forEach(opt => opt.classList.remove('correct', 'incorrect'));
+    }
+</script>
+
+</body>
+</html>
