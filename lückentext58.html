@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interaktives Arbeitsblatt: Russischer Genitiv</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --error-color: #e74c3c;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --border-color: #dcdde1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--primary-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        h1, h2 {
+            color: var(--primary-color);
+            text-align: center;
+        }
+
+        h1 { border-bottom: 3px solid var(--secondary-color); padding-bottom: 10px; }
+
+        .instruction-box {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 5px solid #ffc107;
+            font-weight: bold;
+        }
+
+        .intro-box {
+            background: #eef2f7;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 5px solid var(--secondary-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background: white;
+            font-size: 0.95rem;
+        }
+
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .exercise-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .exercise-item {
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: #fafafa;
+            transition: all 0.3s;
+        }
+
+        .sentence {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .translation {
+            display: block;
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        select {
+            padding: 6px 10px;
+            font-size: 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 4px;
+            background-color: white;
+            cursor: pointer;
+            margin: 0 5px;
+            transition: all 0.3s;
+            outline: none;
+        }
+
+        /* Sofortiges Feedback-Design */
+        select.correct {
+            border-color: var(--success-color);
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        select.incorrect {
+            border-color: var(--error-color);
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        button {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: opacity 0.2s;
+        }
+
+        .btn-reset { background-color: #95a5a6; color: white; }
+        .btn-solution { background-color: var(--secondary-color); color: white; }
+        button:hover { opacity: 0.9; }
+
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            .sentence { font-size: 1rem; }
+            select { margin: 5px 0; width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Russische Grammatik</h1>
+    <h2>Genitiv der Adjektive (Singular)</h2>
+
+    <div class="instruction-box">
+        Anleitung: Wähle die passende Endung aus dem Menü aus. Du erhältst sofort eine Rückmeldung: Grün bedeutet richtig, Rot bedeutet falsch.
+    </div>
+
+    <div class="intro-box">
+        <table>
+            <thead>
+                <tr>
+                    <th>Genus</th>
+                    <th>Gruppe</th>
+                    <th>Endung</th>
+                    <th>Beispiel (Genitiv)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Mask./Neut.</td>
+                    <td>Hart (новый/ое)</td>
+                    <td><strong>-ого</strong></td>
+                    <td>нового словаря / здания</td>
+                </tr>
+                <tr>
+                    <td>Mask./Neut.</td>
+                    <td>Weich (синий/ее)</td>
+                    <td><strong>-его</strong></td>
+                    <td>синего словаря / моря</td>
+                </tr>
+                <tr>
+                    <td>Feminin</td>
+                    <td>Hart (новая)</td>
+                    <td><strong>-ой</strong></td>
+                    <td>новой книги</td>
+                </tr>
+                <tr>
+                    <td>Feminin</td>
+                    <td>Weich (синяя)</td>
+                    <td><strong>-ей</strong></td>
+                    <td>синей ручки</td>
+                </tr>
+            </tbody>
+        </table>
+        <p><em>Hinweis:</em> Die Endung „-ого“ wird wie „-owo“ ausgesprochen.</p>
+    </div>
+
+    <div class="exercise-list" id="exercise-list">
+        <!-- JS wird die Aufgaben hier einfügen -->
+    </div>
+
+    <p style="text-align:center; margin-top:40px; color:#7f8c8d; font-size: 0.8rem;">© Sprachassistent Russisch</p>
+</div>
+
+<script>
+    const exercises = [
+        { q: "У меня нет нов", a: "ого", w: "телефона.", t: "Ich habe kein neues Telefon." },
+        { q: "Я жду стар", a: "ой", w: "подруги.", t: "Ich warte auf eine alte Freundin." },
+        { q: "Здесь нет син", a: "его", w: "карандаша.", t: "Hier gibt es keinen blauen Bleistift." },
+        { q: "Около хорош", a: "ей", w: "школы есть парк.", t: "In der Nähe der guten Schule gibt es einen Park." },
+        { q: "У этого больш", a: "ого", w: "здания нет входа.", t: "Dieses große Gebäude hat keinen Eingang." },
+        { q: "Для русск", a: "ого", w: "языка это правило важно.", t: "Für die russische Sprache ist diese Regel wichtig." },
+        { q: "В центре последн", a: "ей", w: "страницы есть фото.", t: "In der Mitte der letzten Seite gibt es ein Foto." },
+        { q: "Я не хочу горяч", a: "его", w: "молока.", t: "Ich möchte keine heiße Milch." },
+        { q: "Мы вышли из маленьк", a: "ого", w: "дома.", t: "Wir kamen aus einem kleinen Haus." },
+        { q: "Нет интересн", a: "ой", w: "книги.", t: "Es gibt kein interessantes Buch." },
+        { q: "Цвет летн", a: "его", w: "неба очень красивый.", t: "Die Farbe des Sommerhimmels ist sehr schön." },
+        { q: "Из холодн", a: "ой", w: "России пришло письмо.", t: "Aus dem kalten Russland kam ein Brief." },
+        { q: "Около син", a: "ей", w: "сумки лежит ключ.", t: "Neben der blauen Tasche liegt ein Schlüssel." },
+        { q: "Для хорош", a: "его", w: "отдыха нужно время.", t: "Für gute Erholung braucht man Zeit." },
+        { q: "У этого молод", a: "ого", w: "человека нет билета.", t: "Dieser junge Mann hat keine Fahrkarte." },
+        { q: "До самог", a: "ого", w: "вечера мы гуляли.", t: "Bis zum späten Abend sind wir spazieren gegangen." },
+        { q: "После дорог", a: "ой", w: "покупки денег нет.", t: "Nach dem teuren Kauf ist kein Geld mehr da." },
+        { q: "Нет русско-английск", a: "ого", w: "словаря.", t: "Es gibt kein russisch-englisches Wörterbuch." },
+        { q: "С высок", a: "ой", w: "горы видно город.", t: "Vom hohen Berg aus sieht man die Stadt." },
+        { q: "Около горяч", a: "его", w: "кофе стоит сахар.", t: "Neben dem heißen Kaffee steht der Zucker." }
+    ];
+
+    const listEl = document.getElementById('exercise-list');
+
+    exercises.forEach((ex, index) => {
+        const item = document.createElement('div');
+        item.className = 'exercise-item';
+        item.id = `task-${index}`;
+        
+        item.innerHTML = `
+            <div class="sentence">
+                ${index + 1}. ${ex.q}
+                <select onchange="checkAnswer(this, '${ex.a}')">
+                    <option value="">--</option>
+                    <option value="ого">ого</option>
+                    <option value="его">его</option>
+                    <option value="ой">ой</option>
+                    <option value="ей">ей</option>
+                </select>
+                ${ex.w}
+                <span class="translation">„${ex.t}“</span>
+            </div>
+            <div class="controls">
+                <button class="btn-reset" onclick="resetTask(${index})">Zurücksetzen</button>
+                <button class="btn-solution" onclick="showSolution(${index}, '${ex.a}')">Lösung</button>
+            </div>
+        `;
+        listEl.appendChild(item);
+    });
+
+    function checkAnswer(select, correct) {
+        if (select.value === "") {
+            select.className = "";
+        } else if (select.value === correct) {
+            select.className = "correct";
+        } else {
+            select.className = "incorrect";
+        }
+    }
+
+    function resetTask(index) {
+        const select = document.querySelector(`#task-${index} select`);
+        select.value = "";
+        select.className = "";
+    }
+
+    function showSolution(index, correct) {
+        const select = document.querySelector(`#task-${index} select`);
+        select.value = correct;
+        select.className = "correct";
+    }
+</script>
+
+</body>
+</html>
