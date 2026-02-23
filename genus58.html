@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interaktives Arbeitsblatt: Genus-Zuordnung im Genitiv</title>
+    <!-- Polyfill für Drag and Drop auf Touch-Geräten -->
+    <script src="https://cdn.jsdelivr.net/npm/drag-drop-touch@1.3.1/DragDropTouch.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --error-color: #e74c3c;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --border-color: #dcdde1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--primary-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: var(--primary-color);
+        }
+
+        h1 { border-bottom: 3px solid var(--secondary-color); padding-bottom: 10px; }
+
+        .instruction-box {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 5px solid #ffc107;
+            font-weight: bold;
+        }
+
+        .intro-box {
+            background: #eef2f7;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 5px solid var(--secondary-color);
+            font-size: 0.95rem;
+        }
+
+        /* Drag-Items Bereich */
+        .drag-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            padding: 20px;
+            background: #f9f9f9;
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 30px;
+            min-height: 100px;
+        }
+
+        .drag-item {
+            padding: 8px 15px;
+            background-color: var(--secondary-color);
+            color: white;
+            border-radius: 20px;
+            cursor: grab;
+            user-select: none;
+            font-size: 1rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.2s, background-color 0.3s;
+        }
+
+        .drag-item:active { cursor: grabbing; }
+
+        /* Drop-Zonen Bereich */
+        .drop-zones-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .drop-zone {
+            min-height: 250px;
+            padding: 15px;
+            background: #fff;
+            border: 3px solid var(--secondary-color);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            transition: background-color 0.3s;
+        }
+
+        .drop-zone h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+            pointer-events: none;
+        }
+
+        .drop-zone.drag-over {
+            background-color: #e3f2fd;
+            border-style: dashed;
+        }
+
+        /* Feedback-Farben */
+        .correct { background-color: var(--success-color) !important; }
+        .incorrect { background-color: var(--error-color) !important; }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: opacity 0.2s;
+        }
+
+        .btn-reset { background-color: #95a5a6; color: white; }
+        .btn-solution { background-color: var(--secondary-color); color: white; }
+
+        /* Responsive Design */
+        @media (max-width: 650px) {
+            .drop-zones-container {
+                grid-template-columns: 1fr;
+            }
+            .drop-zone {
+                min-height: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Russische Grammatik</h1>
+    <h2>Adjektive im Genitiv: Zuordnung zum Genus</h2>
+
+    <div class="instruction-box">
+        Anleitung: Ziehe die russischen Adjektive in die richtige Box. 
+        Du erhältst sofort eine Rückmeldung: Grün für richtig, Rot für falsch.
+    </div>
+
+    <div class="intro-box">
+        <strong>Kurze Erinnerung:</strong>
+        <ul>
+            <li>Maskulinum & Neutrum enden im Genitiv auf: <strong>-ого</strong> oder <strong>-его</strong></li>
+            <li>Femininum endet im Genitiv auf: <strong>-ой</strong> oder <strong>-ей</strong></li>
+        </ul>
+    </div>
+
+    <!-- Quelle der Drag-Items -->
+    <div class="drag-container" id="source-container">
+        <!-- JS generiert diese Items -->
+    </div>
+
+    <!-- Zielbereiche -->
+    <div class="drop-zones-container">
+        <div class="drop-zone" id="mask-neut" data-genus="mn">
+            <h3>Maskulinum / Neutrum</h3>
+        </div>
+        <div class="drop-zone" id="fem" data-genus="f">
+            <h3>Femininum</h3>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="btn-reset" onclick="resetAll()">Zurücksetzen</button>
+        <button class="btn-solution" onclick="showSolution()">Lösung anzeigen</button>
+    </div>
+
+    <p style="text-align:center; margin-top:40px; color:#7f8c8d; font-size: 0.8rem;">© Sprachassistent Russisch</p>
+</div>
+
+<script>
+    const adjectives = [
+        { text: "нового", genus: "mn" },
+        { text: "синей", genus: "f" },
+        { text: "хорошего", genus: "mn" },
+        { text: "большой", genus: "f" },
+        { text: "русского", genus: "mn" },
+        { text: "интересной", genus: "f" },
+        { text: "летнего", genus: "mn" },
+        { text: "маленькой", genus: "f" },
+        { text: "дорогого", genus: "mn" },
+        { text: "синего", genus: "mn" },
+        { text: "последней", genus: "f" },
+        { text: "горячего", genus: "mn" },
+        { text: "новой", genus: "f" },
+        { text: "старого", genus: "mn" },
+        { text: "хорошей", genus: "f" },
+        { text: "большого", genus: "mn" },
+        { text: "молодой", genus: "f" },
+        { text: "маленького", genus: "mn" },
+        { text: "трудной", genus: "f" },
+        { text: "зимнего", genus: "mn" }
+    ];
+
+    const sourceContainer = document.getElementById('source-container');
+    const dropZones = document.querySelectorAll('.drop-zone');
+
+    // Erstelle Adjektive im Quell-Container
+    function init() {
+        // Mische die Adjektive zufällig
+        const shuffled = [...adjectives].sort(() => Math.random() - 0.5);
+        
+        shuffled.forEach((adj, index) => {
+            const div = document.createElement('div');
+            div.className = 'drag-item';
+            div.textContent = adj.text;
+            div.id = 'adj-' + index;
+            div.draggable = true;
+            div.dataset.genus = adj.genus;
+            
+            div.addEventListener('dragstart', handleDragStart);
+            div.addEventListener('dragend', handleDragEnd);
+            
+            sourceContainer.appendChild(div);
+        });
+    }
+
+    let draggedElement = null;
+
+    function handleDragStart(e) {
+        draggedElement = this;
+        this.style.opacity = '0.5';
+        e.dataTransfer.setData('text/plain', this.id);
+    }
+
+    function handleDragEnd(e) {
+        this.style.opacity = '1';
+        draggedElement = null;
+        dropZones.forEach(zone => zone.classList.remove('drag-over'));
+    }
+
+    dropZones.forEach(zone => {
+        zone.addEventListener('dragover', e => {
+            e.preventDefault();
+            zone.classList.add('drag-over');
+        });
+
+        zone.addEventListener('dragleave', () => {
+            zone.classList.remove('drag-over');
+        });
+
+        zone.addEventListener('drop', e => {
+            e.preventDefault();
+            zone.classList.remove('drag-over');
+            const id = e.dataTransfer.getData('text/plain');
+            const element = document.getElementById(id);
+            
+            if (element) {
+                zone.appendChild(element);
+                checkElement(element, zone);
+            }
+        });
+    });
+
+    function checkElement(element, zone) {
+        const correctGenus = element.dataset.genus;
+        const zoneGenus = zone.dataset.genus;
+
+        if (correctGenus === zoneGenus) {
+            element.classList.add('correct');
+            element.classList.remove('incorrect');
+        } else {
+            element.classList.add('incorrect');
+            element.classList.remove('correct');
+        }
+    }
+
+    function resetAll() {
+        sourceContainer.innerHTML = '';
+        dropZones.forEach(zone => {
+            const title = zone.querySelector('h3');
+            zone.innerHTML = '';
+            zone.appendChild(title);
+        });
+        init();
+    }
+
+    function showSolution() {
+        const items = document.querySelectorAll('.drag-item');
+        const maskZone = document.getElementById('mask-neut');
+        const femZone = document.getElementById('fem');
+
+        items.forEach(item => {
+            if (item.dataset.genus === 'mn') {
+                maskZone.appendChild(item);
+            } else {
+                femZone.appendChild(item);
+            }
+            item.classList.add('correct');
+            item.classList.remove('incorrect');
+        });
+    }
+
+    // Initialisierung
+    init();
+
+</script>
+
+</body>
+</html>
