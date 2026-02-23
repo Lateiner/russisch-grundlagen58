@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Klassifizierungs-Quiz: Russisches Adjektiv</title>
+    <!-- Polyfill für Drag and Drop auf Touch-Geräten -->
+    <script src="https://cdn.jsdelivr.net/npm/drag-drop-touch@1.3.1/DragDropTouch.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --error-color: #e74c3c;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --border-color: #dcdde1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--primary-color);
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        h1 { 
+            text-align: center; 
+            color: var(--primary-color); 
+            margin-bottom: 20px;
+            border-bottom: 3px solid var(--secondary-color); 
+            padding-bottom: 10px; 
+            font-size: 1.5rem; 
+        }
+
+        .instruction-box {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border-left: 5px solid #ffc107;
+            font-weight: bold;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .intro-box {
+            background: #eef2f7;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 5px solid var(--secondary-color);
+            font-size: 0.95rem;
+        }
+
+        .quiz-item {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #fafafa;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-item.solved {
+            border-color: var(--success-color);
+        }
+
+        .nominativ-display {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 15px;
+            background: white;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #eee;
+        }
+
+        .group-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .group-btn {
+            padding: 12px;
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .group-btn:hover:not(.disabled) {
+            border-color: var(--secondary-color);
+            background-color: #f0f8ff;
+        }
+
+        .group-btn.correct {
+            background-color: var(--success-color) !important;
+            border-color: var(--success-color) !important;
+            color: white;
+        }
+
+        .group-btn.incorrect {
+            background-color: var(--error-color) !important;
+            border-color: var(--error-color) !important;
+            color: white;
+            animation: shake 0.4s;
+        }
+
+        .group-btn.disabled {
+            cursor: default;
+            opacity: 0.7;
+        }
+
+        .result-info {
+            display: none;
+            margin-top: 15px;
+            padding: 12px;
+            background-color: #e6ffed;
+            border-radius: 6px;
+            border-left: 4px solid var(--success-color);
+            font-weight: bold;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        button.action-btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.85rem;
+            transition: opacity 0.2s;
+            flex: 1;
+        }
+
+        .btn-reset { background-color: #95a5a6; color: white; }
+        .btn-solution { background-color: var(--secondary-color); color: white; }
+        button.action-btn:hover { opacity: 0.9; }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            .group-options { grid-template-columns: 1fr; }
+            .controls { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Klassifizierungs-Quiz</h1>
+
+    <div class="instruction-box">
+        Anleitung: Bestimme die richtige Adjektivgruppe für das Wort im Nominativ. <br>
+        Dadurch weißt du, ob die Endung im Genitiv <strong>-ого/-ой</strong> (Hart) oder <strong>-его/-ей</strong> (Weich/Zischlaut) lautet.
+    </div>
+
+    <div class="intro-box">
+        <strong>Kurzhilfe:</strong> <br>
+        • <strong>Hart:</strong> Stämme auf harten Konsonanten (Endung -ый / -ой). <br>
+        • <strong>Weich:</strong> Stämme auf weichen Konsonanten (Endung -ний). <br>
+        • <strong>Zischlaut / Guttural:</strong> Stämme auf ж, ш, ч, щ oder к, г, х.
+    </div>
+
+    <div id="quiz-container">
+        <!-- JS generiert die Aufgaben hier -->
+    </div>
+
+    <p style="text-align:center; margin-top:40px; color:#7f8c8d; font-size: 0.8rem;">&copy; Sprachassistent Russisch</p>
+</div>
+
+<script>
+    // Daten: 20 Adjektive
+    const quizData = [
+        { nom: "новый", group: "hart", gen: "нового / новой", explanation: "Klassisches hartes Adjektiv auf -ый." },
+        { nom: "синий", group: "weich", gen: "синего / синей", explanation: "Weiches Adjektiv auf -ний." },
+        { nom: "хороший", group: "zisch", gen: "хорошего / хорошей", explanation: "Zischlaut-Stamm auf -ш-. Unbetonte Endung -его." },
+        { nom: "большой", group: "zisch", gen: "большого / большой", explanation: "Zischlaut-Stamm auf -ш-. Betonte Endung -ого." },
+        { nom: "русский", group: "zisch", gen: "русского / русской", explanation: "Guttural-Stamm auf -к-." },
+        { nom: "последний", group: "weich", gen: "последнего / последней", explanation: "Weiches Adjektiv auf -ний." },
+        { nom: "молодой", group: "hart", gen: "молодого / молодой", explanation: "Hartes Adjektiv mit Endung -ой." },
+        { nom: "маленький", group: "zisch", gen: "маленького / маленькой", explanation: "Guttural-Stamm auf -к-." },
+        { nom: "дорогая", group: "zisch", gen: "дорогого / дорогой", explanation: "Guttural-Stamm auf -г-." },
+        { nom: "летнее", group: "weich", gen: "летнего / летней", explanation: "Weiches Adjektiv (Stamm летн-)." },
+        { nom: "интересный", group: "hart", gen: "интересного / интересной", explanation: "Hartes Adjektiv auf -ый." },
+        { nom: "горячий", group: "zisch", gen: "горячего / горячей", explanation: "Zischlaut-Stamm auf -ч-." },
+        { nom: "старая", group: "hart", gen: "старого / старой", explanation: "Hartes Adjektiv auf -ая." },
+        { nom: "зимнее", group: "weich", gen: "зимнего / зимней", explanation: "Weiches Adjektiv (Stamm зимн-)." },
+        { nom: "красивая", group: "hart", gen: "красивого / красивой", explanation: "Hartes Adjektiv." },
+        { nom: "плохой", group: "zisch", gen: "плохого / плохой", explanation: "Guttural-Stamm auf -х-." },
+        { nom: "трудный", group: "hart", gen: "трудного / трудной", explanation: "Hartes Adjektiv." },
+        { nom: "последняя", group: "weich", gen: "последнего / последней", explanation: "Weiches Adjektiv." },
+        { nom: "длинное", group: "hart", gen: "длинного / длинной", explanation: "Hartes Adjektiv." },
+        { nom: "свежий", group: "zisch", gen: "свежего / свежей", explanation: "Zischlaut-Stamm auf -ж-." }
+    ];
+
+    const container = document.getElementById('quiz-container');
+
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    function renderQuiz(quizId, isInitial = false) {
+        const itemData = quizData[quizId];
+        
+        const quizHtml = `
+            <div class="quiz-item" id="quiz-${quizId}">
+                <h3>Wort ${quizId + 1}</h3>
+                <div class="nominativ-display">${itemData.nom}</div>
+                <div class="group-options">
+                    <button class="group-btn" onclick="checkAnswer(${quizId}, 'hart', this)">Hart (-ого / -ой)</button>
+                    <button class="group-btn" onclick="checkAnswer(${quizId}, 'weich', this)">Weich (-его / -ей)</button>
+                    <button class="group-btn" onclick="checkAnswer(${quizId}, 'zisch', this)">Zischlaut / Guttural</button>
+                </div>
+                <div class="result-info" id="res-${quizId}">
+                    Genitiv-Form: <span>${itemData.gen}</span> <br>
+                    <small>${itemData.explanation}</small>
+                </div>
+                <div class="controls">
+                    <button class="action-btn btn-reset" onclick="resetQuiz(${quizId})">Zurücksetzen und mischen</button>
+                    <button class="action-btn btn-solution" onclick="showSolution(${quizId})">Lösung anzeigen</button>
+                </div>
+            </div>
+        `;
+
+        if (isInitial) {
+            container.innerHTML += quizHtml;
+        } else {
+            const oldQuiz = document.getElementById(`quiz-${quizId}`);
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = quizHtml;
+            oldQuiz.parentNode.replaceChild(tempDiv.firstElementChild, oldQuiz);
+        }
+    }
+
+    function init() {
+        container.innerHTML = '';
+        // Wir rendern alle 20 Aufgaben in der Originalreihenfolge der Daten-IDs
+        quizData.forEach((_, index) => renderQuiz(index, true));
+    }
+
+    window.checkAnswer = function(quizId, selectedGroup, btn) {
+        const quizEl = document.getElementById(`quiz-${quizId}`);
+        if (quizEl.classList.contains('solved')) return;
+
+        const correctGroup = quizData[quizId].group;
+
+        if (selectedGroup === correctGroup) {
+            btn.classList.add('correct');
+            quizEl.classList.add('solved');
+            document.getElementById(`res-${quizId}`).style.display = 'block';
+            
+            // Andere Buttons deaktivieren
+            const allBtns = quizEl.querySelectorAll('.group-btn');
+            allBtns.forEach(b => {
+                if (b !== btn) b.classList.add('disabled');
+            });
+        } else {
+            btn.classList.add('incorrect');
+            setTimeout(() => {
+                btn.classList.remove('incorrect');
+            }, 500);
+        }
+    };
+
+    window.resetQuiz = function(quizId) {
+        // Bei diesem Quiz-Typ mischen wir nicht die Optionen (da diese fest sind), 
+        // sondern setzen den Status zurück. "Zurücksetzen" reicht hier technisch aus.
+        renderQuiz(quizId);
+    };
+
+    window.showSolution = function(quizId) {
+        const quizEl = document.getElementById(`quiz-${quizId}`);
+        if (quizEl.classList.contains('solved')) return;
+
+        const correctGroup = quizData[quizId].group;
+        const btns = quizEl.querySelectorAll('.group-btn');
+        
+        let correctBtn;
+        btns.forEach(b => {
+            if (b.getAttribute('onclick').includes(`'${correctGroup}'`)) correctBtn = b;
+        });
+
+        if (correctBtn) {
+            checkAnswer(quizId, correctGroup, correctBtn);
+        }
+    };
+
+    init();
+</script>
+
+</body>
+</html>
