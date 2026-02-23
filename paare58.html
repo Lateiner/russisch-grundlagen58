@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paare finden: Russischer Genitiv</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --error-color: #e74c3c;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --border-color: #dcdde1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--primary-color);
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        h1 { 
+            text-align: center; 
+            color: var(--primary-color); 
+            margin-bottom: 20px;
+            border-bottom: 3px solid var(--secondary-color); 
+            padding-bottom: 10px; 
+            font-size: 1.5rem; 
+        }
+
+        .instruction-box {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border-left: 5px solid #ffc107;
+            font-weight: bold;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .exercise-block {
+            margin-bottom: 40px;
+            padding: 20px;
+            background: #fafafa;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+        }
+
+        .exercise-block h3 {
+            margin-top: 0;
+            color: var(--secondary-color);
+            font-size: 1.1rem;
+        }
+
+        .matching-board {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .col-header {
+            text-align: center;
+            font-weight: bold;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .match-btn {
+            padding: 12px 10px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            background: white;
+            color: var(--primary-color);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s ease;
+            user-select: none;
+            touch-action: manipulation;
+        }
+
+        .match-btn:hover:not(.disabled) {
+            border-color: var(--secondary-color);
+            background: #f0f8ff;
+        }
+
+        /* Zustände der Buttons */
+        .match-btn.selected {
+            border-color: var(--secondary-color);
+            background: var(--secondary-color);
+            color: white;
+            transform: scale(1.02);
+        }
+
+        .match-btn.correct {
+            border-color: var(--success-color);
+            background: var(--success-color);
+            color: white;
+            cursor: default;
+        }
+
+        .match-btn.incorrect {
+            border-color: var(--error-color);
+            background: var(--error-color);
+            color: white;
+            animation: shake 0.4s;
+        }
+
+        .match-btn.disabled {
+            pointer-events: none;
+        }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        button.action-btn {
+            flex: 1;
+            max-width: 250px;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9rem;
+            transition: opacity 0.2s;
+        }
+
+        .btn-reset { background-color: #95a5a6; color: white; }
+        .btn-solution { background-color: var(--secondary-color); color: white; }
+        button.action-btn:hover { opacity: 0.9; }
+
+        @media (max-width: 500px) {
+            .match-btn { font-size: 0.9rem; padding: 10px 5px; }
+            .controls { flex-direction: column; align-items: center; }
+            button.action-btn { max-width: 100%; width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Paare finden: Russischer Genitiv</h1>
+
+    <div class="instruction-box">
+        Anleitung: Klicke auf ein Adjektiv im Nominativ (linke Spalte) und finde dann die passende Genitiv-Form (rechte Spalte). <br>
+        <span style="color:var(--success-color);">Grün</span> = Richtig zugeordnet. <br>
+        <span style="color:var(--error-color);">Rot</span> = Falsch (versuche es noch einmal).
+    </div>
+
+    <div id="exercises-container">
+        <!-- JS generiert die Übungsblöcke hier -->
+    </div>
+
+    <p style="text-align:center; margin-top:30px; color:#7f8c8d; font-size: 0.8rem;">© Sprachassistent Russisch</p>
+</div>
+
+<script>
+    // Daten: 20 Paare aufgeteilt in 5 Blöcke zu je 4 Paaren
+    const wordSets = [
+        [
+            { nom: "большой", gen: "большого", id: "1-1" },
+            { nom: "новая", gen: "новой", id: "1-2" },
+            { nom: "синий", gen: "синего", id: "1-3" },
+            { nom: "хорошая", gen: "хорошей", id: "1-4" }
+        ],
+        [
+            { nom: "старый", gen: "старого", id: "2-1" },
+            { nom: "маленькая", gen: "маленькой", id: "2-2" },
+            { nom: "горячее", gen: "горячего", id: "2-3" },
+            { nom: "дорогой", gen: "дорогого", id: "2-4" }
+        ],
+        [
+            { nom: "русское", gen: "русского", id: "3-1" },
+            { nom: "летняя", gen: "летней", id: "3-2" },
+            { nom: "последний", gen: "последнего", id: "3-3" },
+            { nom: "молодая", gen: "молодой", id: "3-4" }
+        ],
+        [
+            { nom: "трудная", gen: "трудной", id: "4-1" },
+            { nom: "интересный", gen: "интересного", id: "4-2" },
+            { nom: "синее", gen: "синего", id: "4-3" },
+            { nom: "красивая", gen: "красивой", id: "4-4" }
+        ],
+        [
+            { nom: "холодное", gen: "холодного", id: "5-1" },
+            { nom: "плохая", gen: "плохой", id: "5-2" },
+            { nom: "зимняя", gen: "зимней", id: "5-3" },
+            { nom: "умный", gen: "умного", id: "5-4" }
+        ]
+    ];
+
+    const container = document.getElementById('exercises-container');
+    let selections = {}; // Speichert die Auswahl pro Block { blockIndex: { colA: null, colB: null } }
+
+    function shuffle(array) {
+        let currentIndex = array.length, randomIndex;
+        while (currentIndex !== 0) {
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex--;
+            [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+        }
+        return array;
+    }
+
+    function renderBlock(blockIndex, isSolved = false) {
+        const blockData = wordSets[blockIndex];
+        
+        // Arrays für Spalten vorbereiten
+        let colA = blockData.map(item => ({ text: item.nom, id: item.id, side: 'A' }));
+        let colB = blockData.map(item => ({ text: item.gen, id: item.id, side: 'B' }));
+
+        if (!isSolved) {
+            colA = shuffle(colA);
+            colB = shuffle(colB);
+        }
+
+        selections[blockIndex] = { sideA: null, sideB: null };
+
+        let html = `
+            <div class="exercise-block" id="block-${blockIndex}">
+                <h3>Runde ${blockIndex + 1}</h3>
+                <div class="matching-board">
+                    <div class="column" id="colA-${blockIndex}">
+                        <div class="col-header">Nominativ</div>
+                        ${colA.map(item => `
+                            <div class="match-btn ${isSolved ? 'correct disabled' : ''}" 
+                                 data-id="${item.id}" 
+                                 data-side="A" 
+                                 onclick="handleSelection(${blockIndex}, this)">
+                                 ${item.text}
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="column" id="colB-${blockIndex}">
+                        <div class="col-header">Genitiv</div>
+                        ${colB.map(item => `
+                            <div class="match-btn ${isSolved ? 'correct disabled' : ''}" 
+                                 data-id="${item.id}" 
+                                 data-side="B" 
+                                 onclick="handleSelection(${blockIndex}, this)">
+                                 ${item.text}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                <div class="controls">
+                    <button class="action-btn btn-reset" onclick="resetBlock(${blockIndex})">Zurücksetzen und mischen</button>
+                    <button class="action-btn btn-solution" onclick="solveBlock(${blockIndex})">Lösung anzeigen</button>
+                </div>
+            </div>
+        `;
+        return html;
+    }
+
+    function init() {
+        container.innerHTML = wordSets.map((_, i) => renderBlock(i)).join('');
+    }
+
+    window.handleSelection = function(blockIndex, element) {
+        if (element.classList.contains('disabled') || element.classList.contains('correct')) return;
+
+        const side = element.getAttribute('data-side');
+        const state = selections[blockIndex];
+
+        // Wenn schon etwas auf dieser Seite ausgewählt war, Auswahl aufheben
+        if (state[`side${side}`]) {
+            state[`side${side}`].classList.remove('selected');
+        }
+
+        // Neues Element markieren
+        element.classList.add('selected');
+        state[`side${side}`] = element;
+
+        // Prüfen, ob beide Seiten gewählt sind
+        if (state.sideA && state.sideB) {
+            checkMatch(blockIndex);
+        }
+    };
+
+    function checkMatch(blockIndex) {
+        const state = selections[blockIndex];
+        const elA = state.sideA;
+        const elB = state.sideB;
+        
+        const idA = elA.getAttribute('data-id');
+        const idB = elB.getAttribute('data-id');
+
+        // UI blockieren während Animation
+        elA.classList.add('disabled');
+        elB.classList.add('disabled');
+
+        if (idA === idB) {
+            // Richtig
+            elA.classList.remove('selected');
+            elB.classList.remove('selected');
+            elA.classList.add('correct');
+            elB.classList.add('correct');
+        } else {
+            // Falsch
+            elA.classList.remove('selected');
+            elB.classList.remove('selected');
+            elA.classList.add('incorrect');
+            elB.classList.add('incorrect');
+
+            setTimeout(() => {
+                elA.classList.remove('incorrect', 'disabled');
+                elB.classList.remove('incorrect', 'disabled');
+            }, 600);
+        }
+
+        // Auswahl zurücksetzen
+        selections[blockIndex] = { sideA: null, sideB: null };
+    }
+
+    window.resetBlock = function(blockIndex) {
+        const block = document.getElementById(`block-${blockIndex}`);
+        const newHtml = renderBlock(blockIndex, false);
+        // Ersetze das alte HTML mit dem neuen, gemischten Block
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = newHtml;
+        block.parentNode.replaceChild(tempDiv.firstElementChild, block);
+    };
+
+    window.solveBlock = function(blockIndex) {
+        const block = document.getElementById(`block-${blockIndex}`);
+        const newHtml = renderBlock(blockIndex, true); // True für isSolved
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = newHtml;
+        block.parentNode.replaceChild(tempDiv.firstElementChild, block);
+    };
+
+    // Initialisierung starten
+    init();
+
+</script>
+
+</body>
+</html>
