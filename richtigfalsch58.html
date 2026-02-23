@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Richtig oder Falsch: Russischer Genitiv</title>
+    <!-- Polyfill für Touch-Geräte -->
+    <script src="https://cdn.jsdelivr.net/npm/drag-drop-touch@1.3.1/DragDropTouch.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --error-color: #e74c3c;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --border-color: #dcdde1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--primary-color);
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        h1 { 
+            text-align: center; 
+            color: var(--primary-color); 
+            margin-bottom: 20px;
+            border-bottom: 3px solid var(--secondary-color); 
+            padding-bottom: 10px; 
+            font-size: 1.5rem; 
+        }
+
+        .instruction-box {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border-left: 5px solid #ffc107;
+            font-weight: bold;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .intro-box {
+            background: #eef2f7;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 5px solid var(--secondary-color);
+            font-size: 0.95rem;
+        }
+
+        .quiz-item {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #fafafa;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .statement-text {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .tf-options {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .tf-btn {
+            flex: 1;
+            padding: 12px;
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .tf-btn:hover:not(.disabled) {
+            border-color: var(--secondary-color);
+            background-color: #f0f8ff;
+        }
+
+        /* Feedback Zustände */
+        .tf-btn.correct-choice {
+            background-color: var(--success-color) !important;
+            border-color: var(--success-color) !important;
+            color: white;
+        }
+
+        .tf-btn.wrong-choice {
+            background-color: var(--error-color) !important;
+            border-color: var(--error-color) !important;
+            color: white;
+            animation: shake 0.4s;
+        }
+
+        .tf-btn.disabled {
+            cursor: default;
+            opacity: 0.7;
+        }
+
+        .explanation-text {
+            display: none;
+            margin-top: 15px;
+            padding: 12px;
+            background-color: #e3f2fd;
+            border-radius: 6px;
+            border-left: 4px solid var(--secondary-color);
+            font-size: 0.95rem;
+            color: var(--primary-color);
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        button.action-btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.85rem;
+            transition: opacity 0.2s;
+            flex: 1;
+        }
+
+        .btn-reset { background-color: #95a5a6; color: white; }
+        .btn-solution { background-color: var(--secondary-color); color: white; }
+        button.action-btn:hover { opacity: 0.9; }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            .tf-options { flex-direction: column; }
+            .controls { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Richtig oder Falsch?</h1>
+
+    <div class="instruction-box">
+        Anleitung: Bewerte die Aussagen zur russischen Grammatik. Klicke auf „Wahr“ oder „Falsch“. Du erhältst sofort eine Rückmeldung.
+    </div>
+
+    <div class="intro-box">
+        <strong>Kurz-Refresher (Genitiv Singular):</strong> <br>
+        • Maskulin/Neutrum (hart): <strong>-ого</strong> <br>
+        • Maskulin/Neutrum (weich/Zischlaut): <strong>-его</strong> <br>
+        • Feminin (hart): <strong>-ой</strong> <br>
+        • Feminin (weich/Zischlaut): <strong>-ей</strong>
+    </div>
+
+    <div id="quiz-container">
+        <!-- JS generiert Aufgaben hier -->
+    </div>
+
+    <p style="text-align:center; margin-top:40px; color:#7f8c8d; font-size: 0.8rem;">© Sprachassistent Russisch</p>
+</div>
+
+<script>
+    // 15 Aussagen
+    const statements = [
+        {
+            text: "Die Genitiv-Endung für maskuline Adjektive der harten Gruppe ist -ого.",
+            isTrue: true,
+            explanation: "Richtig! Beispiel: новый -> нового."
+        },
+        {
+            text: "Das Wort „синего“ wird wie „sinewo“ ausgesprochen.",
+            isTrue: true,
+            explanation: "Stimmt! Das 'г' in der Endung -ого/-его wird wie ein 'w' gesprochen."
+        },
+        {
+            text: "Weibliche Adjektive der harten Gruppe (z. B. новая) enden im Genitiv auf -ей.",
+            isTrue: false,
+            explanation: "Falsch. Harte weibliche Adjektive enden auf -ой (новой)."
+        },
+        {
+            text: "Nach den Zischlauten ж, ш, ч, щ schreibt man im Genitiv Maskulin immer -ого.",
+            isTrue: false,
+            explanation: "Falsch. Man schreibt meistens -его (хорошего), außer die Endung ist betont (большого)."
+        },
+        {
+            text: "Das Adjektiv „синий“ gehört zur weichen Gruppe.",
+            isTrue: true,
+            explanation: "Richtig. Adjektive auf -ний sind weich und nutzen daher die Endungen -его/-ей."
+        },
+        {
+            text: "Im Genitiv Singular haben Maskulinum und Neutrum dieselben Adjektiv-Endungen.",
+            isTrue: true,
+            explanation: "Korrekt. Beide nutzen -ого oder -его."
+        },
+        {
+            text: "Die Phrase „у хорошого друга“ ist grammatikalisch richtig geschrieben.",
+            isTrue: false,
+            explanation: "Falsch. Es muss „у хорошего друга“ heißen (Regel: nach Zischlauten unbetont 'е')."
+        },
+        {
+            text: "Zusammengesetzte Adjektive wie „русско-английский“ werden in beiden Teilen dekliniert.",
+            isTrue: false,
+            explanation: "Falsch. Nur der zweite Teil wird dekliniert: русско-английского."
+        },
+        {
+            text: "Die Endung -ей wird für weibliche Adjektive nach Zischlauten verwendet.",
+            isTrue: true,
+            explanation: "Richtig. Beispiel: хорошая -> хорошей."
+        },
+        {
+            text: "Das Adjektiv „большой“ hat im Genitiv Maskulin die Endung -его.",
+            isTrue: false,
+            explanation: "Falsch. Da die Endung betont ist, heißt es „большого“."
+        },
+        {
+            text: "Die Frage des Genitivs lautet unter anderem „чего?“.",
+            isTrue: true,
+            explanation: "Richtig. Der Genitiv antwortet auf „кого?“ (belebt) und „чего?“ (unbelebt)."
+        },
+        {
+            text: "Nach der Verneinung „нет“ steht das Adjektiv im Akkusativ.",
+            isTrue: false,
+            explanation: "Falsch. Nach „нет“ folgt zwingend der Genitiv."
+        },
+        {
+            text: "Das Adjektiv „маленький“ nutzt im Genitiv Maskulin die Endung -его.",
+            isTrue: false,
+            explanation: "Falsch. Es gehört zur Guttural-Gruppe (к, г, х) und nutzt -ого: маленького."
+        },
+        {
+            text: "Die Endung -ого schreibt man mit einem 'г', spricht es aber wie 'в' (v/w).",
+            isTrue: true,
+            explanation: "Absolut richtig. Das ist eine der wichtigsten Ausspracheregeln."
+        },
+        {
+            text: "„Синей сумки“ ist die korrekte Genitivform von „синяя сумка“.",
+            isTrue: true,
+            explanation: "Richtig. Weich weiblich endet auf -ей."
+        }
+    ];
+
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    const container = document.getElementById('quiz-container');
+
+    function renderQuiz() {
+        container.innerHTML = '';
+        const shuffled = shuffleArray([...statements]);
+        
+        shuffled.forEach((s, index) => {
+            const div = document.createElement('div');
+            div.className = 'quiz-item';
+            div.id = `item-${index}`;
+            
+            div.innerHTML = `
+                <div class="statement-text">${index + 1}. ${s.text}</div>
+                <div class="tf-options">
+                    <button class="tf-btn" onclick="checkTF(${index}, true, ${s.isTrue})">Wahr</button>
+                    <button class="tf-btn" onclick="checkTF(${index}, false, ${s.isTrue})">Falsch</button>
+                </div>
+                <div class="explanation-text" id="exp-${index}">
+                    <strong>Lösung:</strong> ${s.isTrue ? 'Wahr' : 'Falsch'}. <br>
+                    ${s.explanation}
+                </div>
+                <div class="controls">
+                    <button class="action-btn btn-reset" onclick="resetItem(${index})">Zurücksetzen</button>
+                    <button class="action-btn btn-solution" onclick="showItemSolution(${index}, ${s.isTrue})">Lösung anzeigen</button>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    window.checkTF = function(idx, userChoice, isTrue) {
+        const item = document.getElementById(`item-${idx}`);
+        const buttons = item.querySelectorAll('.tf-btn');
+        const correctBtn = isTrue ? buttons[0] : buttons[1];
+        const wrongBtn = isTrue ? buttons[1] : buttons[0];
+        const selectedBtn = userChoice ? buttons[0] : buttons[1];
+
+        if (userChoice === isTrue) {
+            selectedBtn.classList.add('correct-choice');
+        } else {
+            selectedBtn.classList.add('wrong-choice');
+            setTimeout(() => selectedBtn.classList.remove('wrong-choice'), 500);
+            correctBtn.classList.add('correct-choice');
+        }
+
+        buttons.forEach(b => b.classList.add('disabled'));
+        document.getElementById(`exp-${idx}`).style.display = 'block';
+    };
+
+    window.resetItem = function(idx) {
+        // Da die Struktur dynamisch ist, ist ein kompletter Rerender bei "Reset & Mischen" besser.
+        // Für einzelne Items setzen wir nur den Status zurück:
+        const item = document.getElementById(`item-${idx}`);
+        const buttons = item.querySelectorAll('.tf-btn');
+        buttons.forEach(b => {
+            b.classList.remove('correct-choice', 'wrong-choice', 'disabled');
+        });
+        document.getElementById(`exp-${idx}`).style.display = 'none';
+    };
+
+    window.showItemSolution = function(idx, isTrue) {
+        const item = document.getElementById(`item-${idx}`);
+        const buttons = item.querySelectorAll('.tf-btn');
+        const correctBtn = isTrue ? buttons[0] : buttons[1];
+        
+        correctBtn.classList.add('correct-choice');
+        buttons.forEach(b => b.classList.add('disabled'));
+        document.getElementById(`exp-${idx}`).style.display = 'block';
+    };
+
+    // Globaler Reset & Misch-Button (hier als Initialisierung genutzt)
+    function init() {
+        renderQuiz();
+    }
+
+    init();
+</script>
+
+</body>
+</html>
