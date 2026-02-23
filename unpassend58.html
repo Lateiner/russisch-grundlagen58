@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Odd One Out: Russischer Genitiv</title>
+    <!-- Polyfill für Touch-Geräte -->
+    <script src="https://cdn.jsdelivr.net/npm/drag-drop-touch@1.3.1/DragDropTouch.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --error-color: #e74c3c;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --border-color: #dcdde1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--primary-color);
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        h1 { 
+            text-align: center; 
+            color: var(--primary-color); 
+            margin-bottom: 20px;
+            border-bottom: 3px solid var(--secondary-color); 
+            padding-bottom: 10px; 
+            font-size: 1.5rem; 
+        }
+
+        .instruction-box {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border-left: 5px solid #ffc107;
+            font-weight: bold;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .quiz-item {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #fafafa;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-item.solved {
+            border-color: var(--success-color);
+            background-color: #f0fff4;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .option-btn {
+            padding: 15px 10px;
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            text-align: center;
+            user-select: none;
+            touch-action: manipulation;
+        }
+
+        .option-btn:hover:not(.disabled) {
+            border-color: var(--secondary-color);
+            background-color: #f0f8ff;
+        }
+
+        /* Feedback Zustände */
+        .option-btn.correct-choice {
+            background-color: var(--success-color) !important;
+            border-color: var(--success-color) !important;
+            color: white;
+        }
+
+        .option-btn.wrong-choice {
+            background-color: var(--error-color) !important;
+            border-color: var(--error-color) !important;
+            color: white;
+            animation: shake 0.4s;
+        }
+
+        .option-btn.disabled {
+            cursor: default;
+            opacity: 0.7;
+        }
+
+        .explanation {
+            display: none;
+            margin-top: 15px;
+            padding: 12px;
+            background-color: #e3f2fd;
+            border-radius: 6px;
+            border-left: 4px solid var(--secondary-color);
+            font-size: 0.95rem;
+            color: var(--primary-color);
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        button.action-btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.85rem;
+            transition: opacity 0.2s;
+            flex: 1;
+        }
+
+        .btn-reset { background-color: #95a5a6; color: white; }
+        .btn-solution { background-color: var(--secondary-color); color: white; }
+        button.action-btn:hover { opacity: 0.9; }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            .options-grid { grid-template-columns: 1fr; }
+            .controls { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Das unpassende Wort (Odd One Out)</h1>
+
+    <div class="instruction-box">
+        Anleitung: In jeder Gruppe gibt es drei Wörter, die einer gemeinsamen grammatikalischen Regel folgen, und ein Wort, das <strong>nicht</strong> dazu passt. Klicke auf das unpassende Wort.
+    </div>
+
+    <div id="exercise-container">
+        <!-- JS generiert Aufgaben hier -->
+    </div>
+
+    <p style="text-align:center; margin-top:40px; color:#7f8c8d; font-size: 0.8rem;">© Sprachassistent Russisch</p>
+</div>
+
+<script>
+    const tasks = [
+        {
+            id: 1,
+            options: ["нового", "красного", "старого", "синего"],
+            correct: "синего",
+            reason: " синего ist weich dekliniert (-его), die anderen sind hart (-ого)."
+        },
+        {
+            id: 2,
+            options: ["хорошей", "синей", "последней", "новой"],
+            correct: "новой",
+            reason: "новой ist hart dekliniert (-ой), die anderen sind weich oder folgen der Zischlaut-Regel (-ей)."
+        },
+        {
+            id: 3,
+            options: ["большого", "хорошего", "горячего", "свежего"],
+            correct: "большого",
+            reason: "большого hat eine betonte Endung (-ого) nach dem Zischlaut, die anderen sind unbetont (-его)."
+        },
+        {
+            id: 4,
+            options: ["русского", "старого", "молодого", "интересной"],
+            correct: "интересной",
+            reason: "интересной ist feminin, die anderen sind maskulin/neutrum."
+        },
+        {
+            id: 5,
+            options: ["маленького", "дорогого", "тихого", "синего"],
+            correct: "синего",
+            reason: "синего ist weich dekliniert, die anderen gehören zur Guttural-Gruppe (к, г, х) mit -ого."
+        },
+        {
+            id: 6,
+            options: ["хорошей", "горячей", "свежей", "большой"],
+            correct: "большой",
+            reason: "большой hat eine betonte Endung (-ой), die anderen sind unbetont (-ей)."
+        },
+        {
+            id: 7,
+            options: ["зимнего", "летнего", "весеннего", "нового"],
+            correct: "нового",
+            reason: "нового ist hart, die anderen drei sind weiche Zeitadjektive auf -ний."
+        },
+        {
+            id: 8,
+            options: ["плохого", "русского", "последнего", "маленького"],
+            correct: "последнего",
+            reason: "последнего ist weich (-его), die anderen enden auf -ого (Guttural-Stamm)."
+        },
+        {
+            id: 9,
+            options: ["старой", "новой", "умной", "синей"],
+            correct: "синей",
+            reason: "синей ist weich (-ей), die anderen drei sind hart (-ой)."
+        },
+        {
+            id: 10,
+            options: ["вчерашнего", "сегодняшнего", "завтрашнего", "красного"],
+            correct: "красного",
+            reason: "красного ist hart (-ого), die anderen sind Zeitadjektive auf -него (-его)."
+        },
+        {
+            id: 11,
+            options: ["большого", "нового", "молодого", "синего"],
+            correct: "синего",
+            reason: "синего nutzt die Endung -его, alle anderen nutzen -ого."
+        },
+        {
+            id: 12,
+            options: ["хорошей", "большой", "интересной", "красивой"],
+            correct: "хорошей",
+            reason: "хорошей nutzt die weiche Endung -ей, die anderen nutzen die harte Endung -ой."
+        },
+        {
+            id: 13,
+            options: ["русско-английского", "немецкого", "французского", "испанского"],
+            correct: "русско-английского",
+            reason: "Es ist ein zusammengesetztes Adjektiv, die anderen sind einfach."
+        },
+        {
+            id: 14,
+            options: ["белого", "черного", "синего", "желтого"],
+            correct: "синего",
+            reason: "синего ist die einzige weiche Form in dieser Farbliste."
+        },
+        {
+            id: 15,
+            options: ["горячего", "свежего", "хорошего", "холодного"],
+            correct: "холодного",
+            reason: "холодного ist hart (-ого), die anderen stehen nach Zischlauten (-его)."
+        }
+    ];
+
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    const container = document.getElementById('exercise-container');
+
+    function renderTask(taskId, isInitial = false) {
+        const taskData = tasks.find(t => t.id === taskId);
+        const shuffledOptions = shuffleArray([...taskData.options]);
+
+        const taskHtml = `
+            <div class="quiz-item" id="task-${taskId}">
+                <h3>Gruppe ${taskId}</h3>
+                <div class="options-grid">
+                    ${shuffledOptions.map(opt => `
+                        <button class="option-btn" 
+                                onclick="checkSelection(${taskId}, '${opt}', this)">
+                            ${opt}
+                        </button>
+                    `).join('')}
+                </div>
+                <div class="explanation" id="exp-${taskId}">
+                    <strong>Richtig!</strong> ${taskData.reason}
+                </div>
+                <div class="controls">
+                    <button class="action-btn btn-reset" onclick="resetTask(${taskId})">Zurücksetzen und mischen</button>
+                    <button class="action-btn btn-solution" onclick="showSolution(${taskId})">Lösung anzeigen</button>
+                </div>
+            </div>
+        `;
+
+        if (isInitial) {
+            container.innerHTML += taskHtml;
+        } else {
+            const oldTask = document.getElementById(`task-${taskId}`);
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = taskHtml;
+            oldTask.parentNode.replaceChild(tempDiv.firstElementChild, oldTask);
+        }
+    }
+
+    window.checkSelection = function(taskId, selected, btn) {
+        const taskEl = document.getElementById(`task-${taskId}`);
+        if (taskEl.classList.contains('solved')) return;
+
+        const taskData = tasks.find(t => t.id === taskId);
+
+        if (selected === taskData.correct) {
+            btn.classList.add('correct-choice');
+            taskEl.classList.add('solved');
+            document.getElementById(`exp-${taskId}`).style.display = 'block';
+            
+            const btns = taskEl.querySelectorAll('.option-btn');
+            btns.forEach(b => {
+                if (b !== btn) b.classList.add('disabled');
+            });
+        } else {
+            btn.classList.add('wrong-choice');
+            setTimeout(() => {
+                btn.classList.remove('wrong-choice');
+            }, 500);
+        }
+    };
+
+    window.resetTask = function(taskId) {
+        renderTask(taskId);
+    };
+
+    window.showSolution = function(taskId) {
+        const taskEl = document.getElementById(`task-${taskId}`);
+        if (taskEl.classList.contains('solved')) return;
+
+        const taskData = tasks.find(t => t.id === taskId);
+        const btns = taskEl.querySelectorAll('.option-btn');
+        
+        btns.forEach(btn => {
+            if (btn.textContent.trim() === taskData.correct) {
+                checkSelection(taskId, taskData.correct, btn);
+            }
+        });
+    };
+
+    function init() {
+        container.innerHTML = '';
+        tasks.forEach(task => renderTask(task.id, true));
+    }
+
+    init();
+</script>
+
+</body>
+</html>
