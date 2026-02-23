@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fehlersuche: Russischer Genitiv</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --error-color: #e74c3c;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --border-color: #dcdde1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--primary-color);
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 850px;
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        h1 { 
+            text-align: center; 
+            color: var(--primary-color); 
+            margin-bottom: 20px;
+            border-bottom: 3px solid var(--secondary-color); 
+            padding-bottom: 10px; 
+            font-size: 1.5rem; 
+        }
+
+        .instruction-box {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border-left: 5px solid #ffc107;
+            font-weight: bold;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .exercise-item {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #fafafa;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .exercise-item.solved {
+            border-color: var(--success-color);
+            background-color: #f0fff4;
+        }
+
+        .phrase-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 15px 0;
+        }
+
+        .phrase-btn {
+            padding: 10px 15px;
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1.05rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            user-select: none;
+            touch-action: manipulation;
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        .phrase-btn:hover:not(.disabled) {
+            border-color: var(--secondary-color);
+            background-color: #f0f8ff;
+        }
+
+        /* Feedback-Zustände */
+        .phrase-btn.correct-clicked {
+            background-color: var(--error-color);
+            border-color: var(--error-color);
+            color: white;
+            animation: shake 0.4s;
+        }
+
+        .phrase-btn.wrong-found {
+            background-color: var(--success-color);
+            border-color: var(--success-color);
+            color: white;
+            cursor: default;
+        }
+
+        .phrase-btn.disabled {
+            cursor: default;
+            opacity: 0.7;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .explanation {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #27ae60;
+            display: none;
+            font-weight: bold;
+            padding: 10px;
+            background: #e6ffed;
+            border-radius: 5px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        button.action-btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.85rem;
+            transition: opacity 0.2s;
+            flex: 1;
+        }
+
+        .btn-reset { background-color: #95a5a6; color: white; }
+        .btn-solution { background-color: var(--secondary-color); color: white; }
+        button.action-btn:hover { opacity: 0.9; }
+
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            .phrase-list { flex-direction: column; }
+            .phrase-btn { width: 100%; }
+            .controls { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Fehlersuche: Russischer Genitiv</h1>
+
+    <div class="instruction-box">
+        Anleitung: Klicke auf die Phrase mit dem grammatikalischen Fehler. <br>
+        <span style="color:var(--error-color);">Rot</span> = Diese Form war bereits korrekt. <br>
+        <span style="color:var(--success-color);">Grün</span> = Fehler gefunden! Die Phrase wird automatisch korrigiert.
+    </div>
+
+    <div id="exercise-container">
+        <!-- JS generiert die Aufgaben hier -->
+    </div>
+
+    <p style="text-align:center; margin-top:40px; color:#7f8c8d; font-size: 0.8rem;">© Sprachassistent Russisch</p>
+</div>
+
+<script>
+    // Daten: Eine Phrase pro Gruppe hat isWrong: true.
+    const tasksData = [
+        {
+            id: 1,
+            phrases: [
+                { text: "нового дома", isWrong: false },
+                { text: "хорошого друга", isWrong: true, correction: "хорошего друга" },
+                { text: "синего неба", isWrong: false }
+            ],
+            hint: "Regel: Nach Zischlauten (ж, ч, ш, щ) steht unbetont 'е', nicht 'о'."
+        },
+        {
+            id: 2,
+            phrases: [
+                { text: "старой книги", isWrong: false },
+                { text: "синой сумки", isWrong: true, correction: "синей сумки" },
+                { text: "новой машины", isWrong: false }
+            ],
+            hint: "Weiche Adjektive (синяя) enden im Genitiv Feminin auf '-ей'."
+        },
+        {
+            id: 3,
+            phrases: [
+                { text: "большого здания", isWrong: false },
+                { text: "дорогово вина", isWrong: true, correction: "дорогого вина" },
+                { text: "нового пальто", isWrong: false }
+            ],
+            hint: "Schreibweise: Die Endung wird zwar wie 'wo' gesprochen, aber mit 'г' geschrieben."
+        },
+        {
+            id: 4,
+            phrases: [
+                { text: "интересной газеты", isWrong: false },
+                { text: "русской языка", isWrong: true, correction: "русского языка" },
+                { text: "вкусной еды", isWrong: false }
+            ],
+            hint: "'Язык' ist maskulin -> Endung '-ого'."
+        },
+        {
+            id: 5,
+            phrases: [
+                { text: "последней страницы", isWrong: false },
+                { text: "зимний ночи", isWrong: true, correction: "зимней ночи" },
+                { text: "хорошей подруги", isWrong: false }
+            ],
+            hint: "Genitiv Feminin: Weiche Adjektive brauchen '-ей'."
+        },
+        {
+            id: 6,
+            phrases: [
+                { text: "горячего чая", isWrong: false },
+                { text: "холодного пива", isWrong: false },
+                { text: "сладкого кашя", isWrong: true, correction: "сладкой каши" }
+            ],
+            hint: "'Каша' ist feminin. (Kasus/Genus-Fehler)."
+        },
+        {
+            id: 7,
+            phrases: [
+                { text: "маленького мальчика", isWrong: false },
+                { text: "умного студента", isWrong: false },
+                { text: "синего ручки", isWrong: true, correction: "синей ручки" }
+            ],
+            hint: "'Ручка' ist feminin -> Adjektiv auf '-ей'."
+        },
+        {
+            id: 8,
+            phrases: [
+                { text: "красивой девушки", isWrong: false },
+                { text: "старого города", isWrong: false },
+                { text: "большево окна", isWrong: true, correction: "большого окна" }
+            ],
+            hint: "Bei betonter Endung nach Zischlauten nutzen wir '-ого'."
+        },
+        {
+            id: 9,
+            phrases: [
+                { text: "летниего дня", isWrong: true, correction: "летнего дня" },
+                { text: "весеннего утра", isWrong: false },
+                { text: "осеннего леса", isWrong: false }
+            ],
+            hint: "Stammvokal-Check: летний -> летнего (ohne 'и')."
+        },
+        {
+            id: 10,
+            phrases: [
+                { text: "трудной задачи", isWrong: false },
+                { text: "длинной дороги", isWrong: false },
+                { text: "краснего карандаша", isWrong: true, correction: "красного карандаша" }
+            ],
+            hint: "'Красный' ist ein hartes Adjektiv -> Endung '-ого'."
+        }
+    ];
+
+    const container = document.getElementById('exercise-container');
+
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    function renderTask(taskId, isInitial = false) {
+        const taskData = tasksData.find(t => t.id === taskId);
+        
+        // Phrasen für diesen Durchlauf mischen
+        const phrasesToRender = shuffleArray([...taskData.phrases]);
+
+        const taskHtml = `
+            <div class="exercise-item" id="task-${taskId}">
+                <h3>Aufgabe ${taskId}</h3>
+                <div class="phrase-list" id="list-${taskId}">
+                    ${phrasesToRender.map((p, idx) => `
+                        <button class="phrase-btn" 
+                                onclick="checkPhrase(${taskId}, this, ${p.isWrong}, '${p.correction || ''}')">
+                            ${p.text}
+                        </button>
+                    `).join('')}
+                </div>
+                <div class="explanation" id="exp-${taskId}">
+                    Richtig! <br> <small>${taskData.hint}</small>
+                </div>
+                <div class="controls">
+                    <button class="action-btn btn-reset" onclick="resetTask(${taskId})">Zurücksetzen und mischen</button>
+                    <button class="action-btn btn-solution" onclick="showSolution(${taskId})">Lösung anzeigen</button>
+                </div>
+            </div>
+        `;
+
+        if (isInitial) {
+            container.innerHTML += taskHtml;
+        } else {
+            const oldTask = document.getElementById(`task-${taskId}`);
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = taskHtml;
+            oldTask.parentNode.replaceChild(tempDiv.firstElementChild, oldTask);
+        }
+    }
+
+    function init() {
+        container.innerHTML = '';
+        tasksData.forEach(task => renderTask(task.id, true));
+    }
+
+    window.checkPhrase = function(taskId, btn, isWrong, correction) {
+        const taskEl = document.getElementById(`task-${taskId}`);
+        if (taskEl.classList.contains('solved')) return;
+
+        if (isWrong) {
+            // Fehler gefunden
+            btn.textContent = correction;
+            btn.classList.add('wrong-found');
+            taskEl.classList.add('solved');
+            
+            document.getElementById(`exp-${taskId}`).style.display = 'block';
+
+            // Andere Buttons im Block deaktivieren
+            const allBtns = taskEl.querySelectorAll('.phrase-btn');
+            allBtns.forEach(b => {
+                if (b !== btn) b.classList.add('disabled');
+            });
+        } else {
+            // Falsche Wahl (Phrase war korrekt)
+            btn.classList.add('correct-clicked');
+            setTimeout(() => {
+                btn.classList.remove('correct-clicked');
+            }, 500);
+        }
+    };
+
+    window.resetTask = function(taskId) {
+        renderTask(taskId);
+    };
+
+    window.showSolution = function(taskId) {
+        const taskEl = document.getElementById(`task-${taskId}`);
+        if (taskEl.classList.contains('solved')) return;
+
+        const taskData = tasksData.find(t => t.id === taskId);
+        const wrongPhrase = taskData.phrases.find(p => p.isWrong);
+        
+        // Finde den Button, der den falschen Text enthält
+        const btns = taskEl.querySelectorAll('.phrase-btn');
+        let wrongBtn;
+        btns.forEach(b => {
+            if (b.textContent.trim() === wrongPhrase.text) wrongBtn = b;
+        });
+
+        if (wrongBtn) {
+            checkPhrase(taskId, wrongBtn, true, wrongPhrase.correction);
+        }
+    };
+
+    init();
+</script>
+
+</body>
+</html>
